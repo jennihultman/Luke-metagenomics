@@ -1,5 +1,7 @@
 # Practicals
 
+Instruction copied and/or modified from Micorbial bioinformatics courses held at MBDP Doctoral program by Jenni Hultman, Antti Karkaman and Igor S. Pessi in 2017-2022.
+
 __Table of Contents:__
 1. [Setting up](#setting-up-the-course-folders)
 2. [Interactive use of Puhti](#interactive-use-of-puhti)
@@ -162,3 +164,26 @@ fastqc trimmed/*.fastq -o fastqc_out_trimmed/ -t 1
 
 Copy the resulting HTML file to your local machine as earlier and look how well the trimming went.  
 Did you find problems with the sequences?
+
+
+## Read based analyses
+For the read-based analyses, we will use `seqtk`, `DIAMOND`, `MEGAN` and `METAXA`.  
+Like before, the script is provided and can be found in the scripts folder (`/scratch/project_2001499/COURSE_FILES/SBATCH_SCRIPTS/READ_BASED.sh`).  
+Let's copy the script to your working directory and take a look using `less`.
+
+Since the four samples have been sequenced really deep, we will utilize only a subset of the reads for the read-based analysis.  
+The subsampled 2,000,000 sequences represent the total community for this analysis.  
+The tool `seqtk` will be used for this.  
+
+We will annotate short reads with `MEGAN` (https://uni-tuebingen.de/fakultaeten/mathematisch-naturwissenschaftliche-fakultaet/fachbereiche/informatik/lehrstuehle/algorithms-in-bioinformatics/software/megan6/) and `METAXA` (https://microbiology.se/software/metaxa2/).  
+`MEGAN` uses a tool called `DIAMOND` which is 20,000 times faster than `blast` to annotate reads against the database of interest.  
+Here we will use the NCBI nr database which has been formatted for `DIAMOND`.   
+Then we will use `MEGAN` to parse the annotations and get taxonomic and functional assignments.  
+
+In addition to `MEGAN`, we will also use another approach (`METAXA`) to get taxonomic profiles.  
+`METAXA` runs in two steps: the first command finds rRNA genes among our reads using HMM models and then annotates them using `BLAST` and a reference database.  
+
+All these steps will take a while to run and therefore we will submit the scripts today to have the results ready for tomorrow.  
+First, you will need to create the following folders to store the output from the script: `RESAMPLED`, `MEGAN` and `METAXA`.  
+Then sumbit the `READ_BASED.sh` script as you did for `Cutadapt` earlier today.  
+

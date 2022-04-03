@@ -11,7 +11,7 @@ __Table of Contents:__
 
 
 ## Setting up the course folders
-The main course directory is located in `/scratch/project_200582`.  
+The main course directory is located in `/scratch/project_2005827`.  
 There you will set up your own directory where you will perform all the tasks for this course.  
 
 First list all projects you're affiliated with in CSC.
@@ -23,16 +23,16 @@ You should see the course project `LUKE_MG`.
 So let's create a folder for you inside the scratch folder, you can find the path in the output from the previous command.
 
 ```bash
-cd /scratch/project_200582
+cd /scratch/project_2005827
 mkdir $USER
 ```
 
 Check with `ls`; which folder did `mkdir $USER` create?
 
-This directory (`/scratch/project_200582/your-user-name`) is your working directory.  
+This directory (`/scratch/project_2005827/your-user-name`) is your working directory.  
 Every time you log into Puhti, you should use `cd` to navigate to this directory, and **all the scripts are to be run in this folder**.  
 
-The raw data used on this course can be found in `/scratch/project_200582/COURSE_FILES/RAWDATA_ILLUMINA`.  
+The raw data used on this course can be found in `/scratch/project_2005827/COURSE_FILES/RAWDATA_ILLUMINA`.  
 Instead of copying the data we will use links to this folder in all of the needed tasks.  
 Why don't we want 14 students copying data to their own folders?
 
@@ -61,55 +61,38 @@ You always need to specify the accounting project (`-A`, `--account`). Otherwise
 
 
 ## QC and trimming for Illumina reads
-QC for the raw data takes few minutes, depending on the allocation.  
-Go to your working directory and make a folder called e.g. `fastqc_raw` for the QC reports.  
 
 QC does not require lot of memory and can be run on the interactive nodes using `sinteractive`.
 
 Activate the biokit environment and open interactive node:
 
 ```bash
-sinteractive -A project_200582
+sinteractive -A project_2005827
 module load biokit
 ```
 
-Now each group will work with their own sequences. Create the variables R1 and R2 to represent the path to your files. Do that just for the strain you will use:
+Run `fastQC` to the files stored in the RAWDATA folder. What does the `-o` and `-t` flags refer to? What do you need to do before running the task?
 
 ```bash
-#### Illumina Raw sequences for the cyanobacteria strain 328
-R1=/scratch/project_2005827/COURSE_FILES/RAWDATA_ILLUMINA/A045-328-GGTCCATT-AGTAGGCT-Tania-Shishido-run20211223R_S45_L001_R1_001.fastq.gz
-R2=/scratch/project_2005827/COURSE_FILES/RAWDATA_ILLUMINA/A045-328-GGTCCATT-AGTAGGCT-Tania-Shishido-run20211223R_S45_L001_R2_001.fastq.gz
-
-#### Illumina Raw sequences for the cyanobacteria strain 327
-R1=/scratch/project_2005827/COURSE_FILES/RAWDATA_ILLUMINA/A044-327-2-CTTGCCTC-GTTATCTC-Tania-Shishido-run20211223R_S44_L001_R1_001.fastq.gz
-R2=/scratch/project_2005827/COURSE_FILES/RAWDATA_ILLUMINA/A044-327-2-CTTGCCTC-GTTATCTC-Tania-Shishido-run20211223R_S44_L001_R2_001.fastq.gz
-
-#### Illumina Raw sequences for the cyanobacteria strain 193
-R1=/scratch/project_2005827/COURSE_FILES/RAWDATA_ILLUMINA/Oscillatoriales-193_1.fastq.gz
-R2=/scratch/project_2005827/COURSE_FILES/RAWDATA_ILLUMINA/Oscillatoriales-193_2.fastq.gz
+fastqc /scratch/project_2005827/COURSE_FILES/RAWDATA/Sample04.NOVASEQ* -o FASTQC/ -t 2
 ```
 
-
-You can check if your variable was set correctly by using:
+Running the QC step on all sequence files would take too long, so they are already done and you can just copy them.
+Make sure you're on your own folder before copying.
 
 ```bash
-echo $R1
-echo $R2
+cd /scratch/project_2005827/$USER
+cp -r /scratch/project_2005827/COURSE_FILES/FASTQC_RAW ./
 ```
 
-
-
-
-### Running fastQC
-Run `fastQC` to the files stored in the RAWDATA folder. What does the `-o` and `-t` flags refer to?
+Then combine the reports in FASTQC folder with multiQC:
 
 ```bash
-fastqc $R1 -o fastqc_raw/ -t 1
-
-fastqc $R2 -o fastqc_raw/ -t 1
+module load biokit
+multiqc FASTQC_RAW/* -o FASTQC_RAW --interactive
 ```
 
-
+To leave the interactive node, type `exit`.  
 
 Copy the resulting HTML file to your local machine with `scp` from the command line (Mac/Linux) or *WinSCP* on Windows.  
 Have a look at the QC report with your favourite browser.  
@@ -120,11 +103,6 @@ __What kind of trimming do you think should be done?__
 ### Running Cutadapt
 
 
-```bash
-# To create a variable to your cyanobacterial strain:
-strain=328
-```
-
 The adapter sequences that you want to trim are located after `-a` and `-A`.  
 What is the difference with `-a` and `-A`?  
 And what is specified with option `-p` or `-o`?
@@ -134,13 +112,37 @@ You can find the answers from Cutadapt [manual](http://cutadapt.readthedocs.io).
 Before running the script, we need to create the directory where the trimmed data will be written:
 
 ```bash
-mkdir trimmed
+mkdir TRIMMED
 ```
 
+```
+#!/bin/bash
+#SBATCH --job-name CUTADAPT
+#SBATCH --error CUTADAPT_%A_%a_err.txt
+#SBATCH --output CUTADAPT_%A_%a_out.txt
+#SBATCH --partition small
+#SBATCH --nodes 1
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task 4
+#SBATCH --mem 4G
+#SBATCH --time 4:00:00
+#SBATCH --account project_2005827
+#SBATCH --array 1-4
 
-```bash
-cutadapt -a CTGTCTCTTATA -A CTGTCTCTTATA -o trimmed/"$strain"_cut_1.fastq -p trimmed/"$strain"_cut_2.fastq $R1 $R2 --minimum-length 80 > cutadapt.log
+SAMPLE=Sample0${SLURM_ARRAY_TASK_ID}
 
+module load biokit
+
+cutadapt ../COURSE_FILES/RAWDATA/$SAMPLE.NOVASEQ.R1.fastq.gz \
+         ../COURSE_FILES/RAWDATA/$SAMPLE.NOVASEQ.R2.fastq.gz \
+         -o TRIMMED/$SAMPLE.NOVASEQ.R1.fastq.gz \
+         -p TRIMMED/$SAMPLE.NOVASEQ.R2.fastq.gz \
+         -a CTGTCTCTTATACACATCTCCGAGCCCACGAGAC \
+         -A CTGTCTCTTATACACATCTGACGCTGCCGACGA \
+         -m 50 \
+         -j 4 \
+         --nextseq-trim 20 > TRIMMED/$SAMPLE.cutadapt.log.txt
+CUTADAPT.sh (END)
 ```
 
 
@@ -168,7 +170,7 @@ Did you find problems with the sequences?
 
 ## Read based analyses
 For the read-based analyses, we will use `seqtk`, `DIAMOND`, `MEGAN` and `METAXA`.  
-Like before, the script is provided and can be found in the scripts folder (`/scratch/project_2001499/COURSE_FILES/SBATCH_SCRIPTS/READ_BASED.sh`).  
+Like before, the script is provided and can be found in the scripts folder (`/scratch/project_2005827/COURSE_FILES/SBATCH_SCRIPTS/READ_BASED.sh`).  
 Let's copy the script to your working directory and take a look using `less`.
 
 Since the four samples have been sequenced really deep, we will utilize only a subset of the reads for the read-based analysis.  

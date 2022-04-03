@@ -238,7 +238,9 @@ We will look at genus level classification.
 
 # Genus level taxonomy
 
-```cd METAXA
+```bash
+
+cd METAXA
 
 metaxa2_dc -o metaxa_genus.txt *level_6.txt
 ```

@@ -193,39 +193,51 @@ Then sumbit the `READ_BASED.sh` script as you did for `Cutadapt` earlier today.
 
 The microbial community profiling for the samples can alsp be done using a 16S/18S rRNA gene based classification software [Metaxa2](http://microbiology.se/software/metaxa2/).  
 It identifies the 16S/18S rRNA genes from the short reads using HMM models and then annotates them using BLAST and a reference database.
-We will run Metaxa2 as an array job in Taito. More about array jobs at CSC [here](https://research.csc.fi/taito-array-jobs).  
+We will run Metaxa2 as an array job in Puhti. More about array jobs at CSC [here](https://docs.csc.fi/computing/running/array-jobs/).  
 Make a folder for Metaxa2 results and direct the results to that folder in your array job script. (Takes ~6 h for the largest files)
 
 ```
-#!/bin/bash -l
-#SBATCH -J metaxa
-#SBATCH -o metaxa_out_%A_%a.txt
-#SBATCH -e metaxa_err_%A_%a.txt
-#SBATCH -t 10:00:00
-#SBATCH --mem=15000
-#SBATCH --array=1-10
-#SBATCH -n 1
-#SBATCH --nodes=1
-#SBATCH --cpus-per-task=6
-#SBATCH -p serial
+#!/bin/bash
+#SBATCH --job-name METAXA
+#SBATCH --error METAXA_%A_%a_err.txt
+#SBATCH --output METAXA_%A_%a_out.txt
+#SBATCH --partition small
+#SBATCH --nodes 1
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task 20
+#SBATCH --mem 100G
+#SBATCH --time 1-00:00:00
+#SBATCH --account project_2005827
+#SBATCH --array 1-4
 
-cd $WRKDIR/Metagenomics2019/Metaxa2
+SAMPLE=Sample0${SLURM_ARRAY_TASK_ID}
+
 # Metaxa uses HMMER3 and BLAST, so load the biokit first
 module load biokit
-# each job will get one sample from the sample names file stored to a variable $name
-name=$(sed -n "$SLURM_ARRAY_TASK_ID"p ../sample_names.txt)
-# then the variable is used in running metaxa2
-metaxa2 -1 ../trimmed_data/$name"_R1_trimmed.fastq" -2 ../trimmed_data/$name"_R2_trimmed.fastq" \
-            -o $name --align none --graphical F --cpu $SLURM_CPUS_PER_TASK --plus
-metaxa2_ttt -i $name".taxonomy.txt" -o $name
-```
+source activate metaxa
+
+seqtk sample -s100 TRIMMED/$SAMPLE.NOVASEQ.R1.fastq.gz 2000000 > RESAMPLED/$SAMPLE.R1.fastq
+seqtk sample -s100 TRIMMED/$SAMPLE.NOVASEQ.R2.fastq.gz 2000000 > RESAMPLED/$SAMPLE.R2.fastq
+
+# the variable is used in running metaxa2
+metaxa2 -1 RESAMPLED/$SAMPLE.R1.fastq \
+        -2 RESAMPLED/$SAMPLE.R2.fastq \
+        -o METAXA/$SAMPLE \
+        --align none \
+        --graphical F \
+        --cpu 20 \
+        --plus &> METAXA/$SAMPLE.metaxa.log.txt
+        
+metaxa2_ttt -i METAXA/$SAMPLE.taxonomy.txt \
+            -o METAXA/$SAMPLE &>> METAXA/$SAMPLE.metaxa.log.txt
 
 When all Metaxa2 array jobs are done, we can combine the results to an OTU table. Different levels correspond to different taxonomic levels.  
 When using any 16S rRNA based software, be cautious with species (and beyond) level classifications. Especially when using short reads.  
 We will look at genus level classification.
 ```
 # Genus level taxonomy
-cd Metaxa2
+cd METAXA
+
 metaxa2_dc -o metaxa_genus.txt *level_6.txt
 ```
 ### Functional profiling with EggNOG

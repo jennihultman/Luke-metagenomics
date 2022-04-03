@@ -230,16 +230,15 @@ metaxa2 -1 RESAMPLED/$SAMPLE.R1.fastq \
         
 metaxa2_ttt -i METAXA/$SAMPLE.taxonomy.txt \
             -o METAXA/$SAMPLE &>> METAXA/$SAMPLE.metaxa.log.txt
-            ```
-
+          
+```
 When all Metaxa2 array jobs are done, we can combine the results to an OTU table. Different levels correspond to different taxonomic levels.  
 When using any 16S rRNA based software, be cautious with species (and beyond) level classifications. Especially when using short reads.  
 We will look at genus level classification.
 
 # Genus level taxonomy
 
-```
-cd METAXA
+```cd METAXA
 
 metaxa2_dc -o metaxa_genus.txt *level_6.txt
 ```

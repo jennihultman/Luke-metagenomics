@@ -153,7 +153,7 @@ sbatch CUTADAPT.sh
 
 To view how the task is running type
 ```bash
-squeue $USER
+squeue -u $USER
 ```
 
 ### Running fastQC on the trimmed reads

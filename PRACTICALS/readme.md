@@ -74,7 +74,7 @@ module load biokit
 Run `fastQC` to the files stored in the RAWDATA folder. What does the `-o` and `-t` flags refer to? What do you need to do before running the task?
 
 ```bash
-fastqc /scratch/project_2005827/COURSE_FILES/RAWDATA/Sample04.NOVASEQ* -o FASTQC/ -t 2
+fastqc /scratch/project_2005827/COURSE_FILES/RAWDATA/Sample04_NOVASEQ* -o FASTQC/ -t 2
 ```
 
 Running the QC step on all sequence files would take too long, so they are already done and you can just copy them.
@@ -133,8 +133,8 @@ SAMPLE=Sample0${SLURM_ARRAY_TASK_ID}
 
 module load biokit
 
-cutadapt ../COURSE_FILES/RAWDATA/$SAMPLE.NOVASEQ.R1.fastq.gz \
-         ../COURSE_FILES/RAWDATA/$SAMPLE.NOVASEQ.R2.fastq.gz \
+cutadapt ../COURSE_FILES/RAWDATA/$SAMPLE_NOVASEQ.R1.fastq.gz \
+         ../COURSE_FILES/RAWDATA/$SAMPLE_NOVASEQ.R2.fastq.gz \
          -o TRIMMED/$SAMPLE.NOVASEQ.R1.fastq.gz \
          -p TRIMMED/$SAMPLE.NOVASEQ.R2.fastq.gz \
          -a CTGTCTCTTATACACATCTCCGAGCCCACGAGAC \
@@ -216,8 +216,8 @@ SAMPLE=Sample0${SLURM_ARRAY_TASK_ID}
 module load biokit
 source activate metaxa
 
-seqtk sample -s100 TRIMMED/$SAMPLE.NOVASEQ.R1.fastq.gz 2000000 > RESAMPLED/$SAMPLE.R1.fastq
-seqtk sample -s100 TRIMMED/$SAMPLE.NOVASEQ.R2.fastq.gz 2000000 > RESAMPLED/$SAMPLE.R2.fastq
+seqtk sample -s100 TRIMMED/$SAMPLE_NOVASEQ.R1.fastq.gz 2000000 > RESAMPLED/$SAMPLE.R1.fastq
+seqtk sample -s100 TRIMMED/$SAMPLE_NOVASEQ.R2.fastq.gz 2000000 > RESAMPLED/$SAMPLE.R2.fastq
 
 # the variable is used in running metaxa2
 metaxa2 -1 RESAMPLED/$SAMPLE.R1.fastq \

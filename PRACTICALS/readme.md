@@ -133,18 +133,23 @@ SAMPLE=Sample0${SLURM_ARRAY_TASK_ID}
 
 module load biokit
 
-cutadapt ../COURSE_FILES/RAW_DATA/$SAMPLE_NOVASEQ.R1.fastq.gz \
-         ../COURSE_FILES/RAW_DATA/$SAMPLE_NOVASEQ.R2.fastq.gz \
-         -o TRIMMED/$SAMPLE.NOVASEQ.R1.fastq.gz \
-         -p TRIMMED/$SAMPLE.NOVASEQ.R2.fastq.gz \
+cutadapt ../COURSE_FILES/RAW_DATA/$SAMPLE"_NOVASEQ.R1.fastq.gz" \
+         ../COURSE_FILES/RAW_DATA/$SAMPLE"_NOVASEQ.R2.fastq.gz" \
+         -o TRIMMED/$SAMPLE".NOVASEQ.R1.fastq.gz" \
+         -p TRIMMED/$SAMPLE".NOVASEQ.R2.fastq.gz" \
          -a CTGTCTCTTATACACATCTCCGAGCCCACGAGAC \
          -A CTGTCTCTTATACACATCTGACGCTGCCGACGA \
          -m 50 \
          -j 4 \
-         --nextseq-trim 20 > TRIMMED/$SAMPLE.cutadapt.log.txt
+         --nextseq-trim 20 > TRIMMED/$SAMPLE".cutadapt.log.txt"
 CUTADAPT.sh (END)
 ```
 
+To run the batch job type
+
+```bash
+sbatch CUTADAPT.sh
+```
 
 ### Running fastQC on the trimmed reads
 You could now check the `cutadapt.log` and answer:

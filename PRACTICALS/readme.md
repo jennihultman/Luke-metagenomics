@@ -165,11 +165,12 @@ You could now check the `cutadapt.log` and answer:
 * How many base calls were quality-trimmed?
 * Overall, what is the percentage of base pairs that were kept?
 
-Then make a new folder (`FASTQC`) for the QC files of the trimmed data and run fastQC and multiQC again as you did before trimming:
+Then make a new folder (`FASTQC`) for the QC files of the trimmed data and run fastQC and multiQC again as you did before trimming. Remember to use intecactive session and load module before starting:
 
 ```bash
+
 mkdir fastqc_out_trimmed
-fastqc TRIMMED/*.fastq -o fastqc_out_trimmed/ -t 1
+fastqc TRIMMED/*.fastq.gz -o fastqc_out_trimmed/ -t 1
 ```
 
 

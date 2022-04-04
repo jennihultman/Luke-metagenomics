@@ -151,6 +151,11 @@ To run the batch job type
 sbatch CUTADAPT.sh
 ```
 
+To view how the task is running type
+```bash
+squeue $USER
+```
+
 ### Running fastQC on the trimmed reads
 You could now check the `cutadapt.log` and answer:
 

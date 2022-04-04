@@ -32,7 +32,7 @@ Check with `ls`; which folder did `mkdir $USER` create?
 This directory (`/scratch/project_2005827/your-user-name`) is your working directory.  
 Every time you log into Puhti, you should use `cd` to navigate to this directory, and **all the scripts are to be run in this folder**.  
 
-The raw data used on this course can be found in `/scratch/project_2005827/COURSE_FILES/RAWDATA_ILLUMINA`.  
+The raw data used on this course can be found in `/scratch/project_2005827/COURSE_FILES/RAW_DATA`.  
 Instead of copying the data we will use links to this folder in all of the needed tasks.  
 Why don't we want 14 students copying data to their own folders?
 
@@ -74,7 +74,7 @@ module load biokit
 Run `fastQC` to the files stored in the RAWDATA folder. What does the `-o` and `-t` flags refer to? What do you need to do before running the task?
 
 ```bash
-fastqc /scratch/project_2005827/COURSE_FILES/RAWDATA/Sample04_NOVASEQ* -o FASTQC/ -t 2
+fastqc /scratch/project_2005827/COURSE_FILES/RAW_DATA/Sample04_NOVASEQ* -o FASTQC/ -t 2
 ```
 
 Running the QC step on all sequence files would take too long, so they are already done and you can just copy them.
@@ -133,8 +133,8 @@ SAMPLE=Sample0${SLURM_ARRAY_TASK_ID}
 
 module load biokit
 
-cutadapt ../COURSE_FILES/RAWDATA/$SAMPLE_NOVASEQ.R1.fastq.gz \
-         ../COURSE_FILES/RAWDATA/$SAMPLE_NOVASEQ.R2.fastq.gz \
+cutadapt ../COURSE_FILES/RAW_DATA/$SAMPLE_NOVASEQ.R1.fastq.gz \
+         ../COURSE_FILES/RAW_DATA/$SAMPLE_NOVASEQ.R2.fastq.gz \
          -o TRIMMED/$SAMPLE.NOVASEQ.R1.fastq.gz \
          -p TRIMMED/$SAMPLE.NOVASEQ.R2.fastq.gz \
          -a CTGTCTCTTATACACATCTCCGAGCCCACGAGAC \

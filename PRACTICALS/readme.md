@@ -88,7 +88,7 @@ cp -r /scratch/project_2005827/COURSE_FILES/FASTQC_RAW ./
 Then combine the reports in FASTQC folder with multiQC:
 
 ```bash
-module load biokit
+module load multiqc
 multiqc FASTQC_RAW/* -o FASTQC_RAW --interactive
 ```
 

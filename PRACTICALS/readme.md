@@ -142,7 +142,7 @@ cutadapt ../COURSE_FILES/RAW_DATA/$SAMPLE"_NOVASEQ.R1.fastq.gz" \
          -m 50 \
          -j 4 \
          --nextseq-trim 20 > TRIMMED/$SAMPLE".cutadapt.log.txt"
-CUTADAPT.sh (END)
+
 ```
 
 To run the batch job type

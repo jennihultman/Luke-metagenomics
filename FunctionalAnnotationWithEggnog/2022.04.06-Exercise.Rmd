@@ -1,0 +1,216 @@
+---
+title: "From Reads to KEGG et al. - Exercises"
+output:
+  html_document:
+    df_print: paged
+---
+
+# DAY 2
+
+## Make megahit available
+
+### Module, conda, docker
+
+In order to run `megahit`, we need to make it again available in the system. Yesterday we learned a very convenient way, the "module system".
+
+There we could make software available e.g. via
+
+```
+module load multiqc
+```
+
+However, what to do, when CSC does not provide the software we need as a module?
+In bioinformatics, there are two answers to that:
+
+a) Conda
+b) Docker/Singularity
+
+Both systems work very well and both are also available on CSC/Puhti, but Singularity is currently the prefered way, as it does not create such a huge file number overhead as conda does. However, docker requires the user to have administrator rights (or the configuration is getting difficult, especially on multi-user systems like Puhti).
+
+Because of that, many HPC environments use `singularity`. Singularity is same but different from docker, it can use the same container from the docker hub, but it does not require administrator rights.
+
+
+### Background for container systems
+
+Docker is a containerization system that allows to create very simple stand-alone computing systems that can be run on existing operating systems but that are widely detached from it. All required tools like operating system (OS) and software (but e.g. it uses the kernel from the host OS) itself is bundled into a single file and stored in a so-called _container_. There exists a central repository for existing containers and users can deploy them for their own use. Further, people can also create their own container and host them on this repository. The adress is
+
+`https://hub.docker.com/`
+
+Working with containers brings a whole bunch of advantages
+
+* You can try out tools without destroying your own system, if something goes wrong, just restart a new container instance
+* Total control over the software environment. Once it is pushed to the repository it is frozen and under version control
+* Easy automatisation in workflows (complex pipelines can deploy container automatically and free the user from any software installation)
+* ...
+
+### Taking a singularity/docker container into use
+
+The first thing we need to do is to pull the container we want from the docker hub, e.g. for megahit you have to type as below. However, please keep in mind that the image is created in your current working folder. For now it is okay to install them to your scratch folder `/scratch/project_2005827/<username>`. Also, before pulling the singularity/docker image please do not forget to start an interactive session so that you do not work on the login node.
+
+```
+singularity pull docker://vout/megahit
+```
+
+This will create a file called `megahit_latest.sif` in your folder. Then, you can start the container and connect to it via
+
+```
+singularity shell -B /scratch megahit_latest.sif
+```
+
+Note the option `-B`, it tells the container, which drives of the host system you would like to bind (=make available) to it.
+You notice that you changed the environemnt by looking at the prompt, it tells now `Singularity>`.
+
+To exit a running container just type
+
+```
+exit
+```
+
+### Technical note
+In case you run into an error telling that there is no disc space left, you can redirect the temporary folders that are required for singularity to transform a docker image into a singularity image with these commands (this note is just a reminder, what to do "in case of", please do not mind otherwise...)
+
+```
+cd /scratch/project_2005827/<USERNAME>
+export SINGULARITY_TMPDIR=$PWD
+export SINGULARITY_CACHEDIR=$PWD
+singularity pull docker://vout/megahit
+```
+
+
+## Exercise 1
+
+### Connecting to Puhti (Reminder)
+
+Login to puhti
+
+```
+ssh <USERNAME>@puhti.csc.fi
+```
+
+Remember not to run anything on a login node, bt always start a interactive session first.
+
+```
+sinteractive --account project_2005827 --mem 32000 --tmp 5
+```
+
+Change to your working directory in the scratch space
+
+```
+cd /scratch/project_2005827/$USER
+```
+
+### Concatenating the files
+
+We do not use the TRIMMED data we created yesterday, as the dataset is already too large to perform the steps here in reasonable time. Hence, we created another toy dataset that you can find here `/scratch/project_2005827/FASTQ_ANNOT`
+
+Please copy the folder from above into your own userfolder and concatenate the files into a single filepair.
+
+```
+cp -r ../FASTQ_ANNOT .
+cd FASTQ_ANNOT
+cat *_R1.fastq.gz > allSamples_R1.fastq.gz
+cat *_R2.fastq.gz > allSamples_R2.fastq.gz
+```
+
+Think about the syntax you see here, whatfor do we need the `-r`, why two dots in the beginning and one dot later?! Are there other ways to copy the files/folder?
+
+
+### Creating the Metagenome
+To create the metagenome, we need to make `megahit` available (see above).
+
+After that, please feed the concatenated data into the assembler (again, check that the folder and paths are correct)
+
+```
+ megahit -1 allSamples_R1.fastq.gz -2 allSamples_R2.fastq.gz -o ../MEGAHIT
+```
+
+(Please notice that this interactive step is only possible, because we use a small toy dataset with 250k reads). If you run the assembling on a real data, you would need at least 400GB of memory (I had cases where I needed up 1.5TB) and 20-40 cores running on it. Then you would plug the above script into a SLURM script, as we did yesterday.
+
+Once the process is ready, check the screen output how the assembly looks like. It gives you the total number of contigs, the min, max and avg length as well as the N50. The N50 is the sequence length of the shortest contig at 50% of the total genome length, think of it as the median contig length.
+
+As defind, the results are in the folder `MEGAHIT/`, which is located one level higher compared to from where you started the script (as indicated by `../`), so `megahit` creates a folder in the same level as your other main folder like `TRIMMED` folder are.
+
+The final output of this whole exercise is in the file `final.contigs.fa` , this is your metagenome in FASTA-format, have a look at it e.g. with `less final.contigs.fa` - in case you get an error, you need to exit your singularity container, as `less` is not installed in it.
+
+## Exercise 2
+
+Again, we first need to make prodigal available. In case the module is not available, we can rely on the existence of precompiled containers, the address for a docker container with prodigal is e.g. `docker://fischuu/prodigal`
+
+So, please create a prodigal singularity container and start it. Type `prodigal -h` to check that things work.
+
+```
+singularity pull docker://fischuu/prodigal
+singularity shell -B /scratch prodigal_latest.sif
+```
+
+Prodigal cannot create an own output folder, so you can create one called `PRODIGAL` in the folder `/scratch/project_2005827/<username>`.
+
+```
+cd /scratch/project_2005827/<username>
+mkdir PRODIGAL
+```
+
+Then you can run prodigal, please check the code from the slides or think about each option from the call below, why we did what we did there...
+
+```
+prodigal -i MEGAHIT/final.contigs.fa -o PRODIGAL/final.contigs.gtf -a PRODIGAL/final.contigs.prodigal.fa -p meta -f gff
+```
+
+Check the files in your folder.
+
+## Exercise 3
+
+As usually, lets make the eggnog mapper available. In the same docker repository there is also a container for eggnog available (`docker://fischuu/eggnog:2.1.7-0.1`)
+
+```
+singularity pull docker://fischuu/eggnog
+singularity shell -B /scratch eggnog_latest.sif
+```
+
+Download the eggnog databases to the folder `/scratch/project_2005827/<username>/EGGNOG/db`
+
+```
+mkdir -p /scratch/project_2005827/<username>/EGGNOG/db
+download_eggnog_data.py --data_dir /scratch/project_2005827/<username>/EGGNOG/db
+```
+
+The download takes a little while, so I downloaded the files already for you and placed them to `/scratch/project_2002857/EGGNOG/db`, so alternatively you can also copy them from there, the above command takes roughly 15 mintues. 
+
+This database search creates a huge I/O traffic and pressure to the discs, hence it is advisable to use the local scratch space from Puhti. Those NVME discs located there are especially designed for high I/O pressure. To have access to the NVME discs, we need to start our interactive session with an additional `tmp` argument. Also, we need more memory than the default value, use the `--mem`-option for this. So, first `exit` your current interactive session and then start a new one with additional parameters
+
+```
+sinteractive --account project_2005827 --mem 75000 --tmp 100
+```
+
+and start the aggnog/emapper singularity container again (remember to go to the folder where you created it...). However, now we need to mount (=make available) also still other disc spaces from Puhti, namely /tmp and /run, so we add them to the `-B`-option
+
+```
+singularity shell -B /scratch,/tmp,/run eggnog_latest.sif
+```
+
+Then, we need to copy our eggnog database to the fast scratch space.
+```
+cd /scratch/project_2005827/<username>/EGGNOG/db
+cp * $LOCAL_SCRATCH
+```
+
+After some waiting time, we have now our database on a very fast disc and can run the database search, using the variable `$LOCAL_SCRATCH` as database directory. We do not have to bother about this when we logout, all tmp files will be deleted. The reason we need to use a variable `$LOCAL_SCRATCH` instead of a regular folder address like `/this/is/my/folder` is that the local scratch is depending on the node and job you are running. The variable `$LOCAL_SCRATCH` points to the right folder. If you are interested to the the physical address in the file system, you can check the content of the variable by typing `echo $LOCAL_SCRATCH`.
+
+Then, perform first the database search (without annotation). For that, feed the fasta file output that contains the protein sequences from the prodigal gene prediction step into the database search (before running the code, please check that you are in the user folder or that the paths to the input/output files are correct, meaning relative to your current position in the filesystem)
+
+```
+# DO NOT RUN THIS, THIS WOULD BE IF YOU USE THE SLOW SCRATCH SPACE:
+# emapper.py -m diamond --data_dir /scratch/project_2005827/<user>/EGGNOG/db --no_annot --no_file_comments -i PRODIGAL/final.contigs.prodigal.fa -o EGGNOG/res
+
+# Use this instead:
+emapper.py -m diamond --data_dir $LOCAL_SCRATCH --no_annot --no_file_comments -i PRODIGAL/final.contigs.prodigal.fa -o EGGNOG/res
+```
+
+Once we found our potential genes from the database, we can annotate them:
+```
+emapper.py --data_dir $LOCAL_SCRATCH --annotate_hits_table EGGNOG/res.emapper.seed_orthologs --no_file_comments -o EGGNOG/res
+```
+
+The output names (`res`) should be in a real-data situation of course something more meaningful and should relate e.g. to the project or task name.
+
+For additional outputs (like e.g. PFAM), please check the individual options of eggnog for details.

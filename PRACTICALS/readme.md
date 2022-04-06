@@ -227,20 +227,20 @@ SAMPLE=Sample0${SLURM_ARRAY_TASK_ID}
 module load biokit
 source activate metaxa
 
-seqtk sample -s100 TRIMMED/$SAMPLE_NOVASEQ.R1.fastq.gz 2000000 > RESAMPLED/$SAMPLE.R1.fastq
-seqtk sample -s100 TRIMMED/$SAMPLE_NOVASEQ.R2.fastq.gz 2000000 > RESAMPLED/$SAMPLE.R2.fastq
+seqtk sample -s100 TRIMMED/$SAMPLE".NOVASEQ.R1.fastq.gz" 2000000 > RESAMPLED/$SAMPLE".R1.fastq"
+seqtk sample -s100 TRIMMED/$SAMPLE".NOVASEQ.R2.fastq.gz" 2000000 > RESAMPLED/$SAMPLE".R2.fastq"
 
 # the variable is used in running metaxa2
-metaxa2 -1 RESAMPLED/$SAMPLE.R1.fastq \
-        -2 RESAMPLED/$SAMPLE.R2.fastq \
+metaxa2 -1 RESAMPLED/$SAMPLE".R1.fastq" \
+        -2 RESAMPLED/$SAMPLE".R2.fastq" \
         -o METAXA/$SAMPLE \
         --align none \
         --graphical F \
         --cpu 20 \
-        --plus &> METAXA/$SAMPLE.metaxa.log.txt
+        --plus &> METAXA/$SAMPLE".metaxa.log.txt"
         
-metaxa2_ttt -i METAXA/$SAMPLE.taxonomy.txt \
-            -o METAXA/$SAMPLE &>> METAXA/$SAMPLE.metaxa.log.txt
+metaxa2_ttt -i METAXA/$SAMPLE".taxonomy.txt" \
+            -o METAXA/$SAMPLE &>> METAXA/$SAMPLE".metaxa.log.txt"
           
 ```
 When all Metaxa2 array jobs are done, we can combine the results to an OTU table. Different levels correspond to different taxonomic levels.  

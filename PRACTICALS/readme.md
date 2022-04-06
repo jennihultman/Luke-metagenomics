@@ -225,7 +225,7 @@ SAMPLE=Sample0${SLURM_ARRAY_TASK_ID}
 
 # Metaxa uses HMMER3 and BLAST, so load the biokit first
 module load biokit
-source activate metaxa
+module load metaxa2
 
 seqtk sample -s100 TRIMMED/$SAMPLE".NOVASEQ.R1.fastq.gz" 2000000 > RESAMPLED/$SAMPLE".R1.fastq"
 seqtk sample -s100 TRIMMED/$SAMPLE".NOVASEQ.R2.fastq.gz" 2000000 > RESAMPLED/$SAMPLE".R2.fastq"

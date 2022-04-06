@@ -227,8 +227,8 @@ SAMPLE=Sample0${SLURM_ARRAY_TASK_ID}
 module load biokit
 module load metaxa2
 
-seqtk sample -s100 TRIMMED/$SAMPLE".NOVASEQ.R1.fastq.gz" 2000000 > RESAMPLED/$SAMPLE".R1.fastq"
-seqtk sample -s100 TRIMMED/$SAMPLE".NOVASEQ.R2.fastq.gz" 2000000 > RESAMPLED/$SAMPLE".R2.fastq"
+seqtk sample -s100 TRIMMED/$SAMPLE".NOVASEQ.R1.fastq.gz" 200000 > RESAMPLED/$SAMPLE".R1.fastq"
+seqtk sample -s100 TRIMMED/$SAMPLE".NOVASEQ.R2.fastq.gz" 200000 > RESAMPLED/$SAMPLE".R2.fastq"
 
 # the variable is used in running metaxa2
 metaxa2 -1 RESAMPLED/$SAMPLE".R1.fastq" \

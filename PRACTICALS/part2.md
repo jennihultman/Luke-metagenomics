@@ -22,7 +22,7 @@ Then open the script using `less` and and answer what do the following flags mea
 --num-cpu-threads 8
 ```
 
-However, as this is only a one-week course we cannot wait for your assemblies to finish, so let's terminate the running jobs.  
+However, as this is only a three-day course we cannot wait for your assemblies to finish, so let's terminate the running jobs.  
 What was the command to view on-going batch jobs?  
 You can terminate the sbatch job by typing:
 
@@ -35,11 +35,11 @@ Terminate your job and check that it is no longer in your list of jobs.
 ## Assembly quality statistics
 Let's take a look at the assemblies in a bit more detail with [MetaQUAST](http://bioinf.spbau.ru/metaquast).
 
-Since the assembly would have taken too long to finish, we ran the assembly for you.
+Since the assembly would have taken too long to finish, I ran the assembly for you.
 The assembly files can be pretty big as well, so you will make a softlink to the assembly folder to save some space.
 
 ```bash
-cd /scratch/project_2001499/$USER
+cd /scratch/project_2005827/$USER
 ln -s -f ../COURSE_FILES/ASSEMBLY_MEGAHIT/
 ```
 
@@ -84,7 +84,7 @@ Questions about the assembly QC:
 ## Genome-resolved metagenomics with anvi'o
 
 `anvi'o` is an analysis and visualization platform for omics data.  
-You can read more from their [webpage](http://merenlab.org/software/anvio/).
+You can read more from their [webpage](https://anvio.org/).
 
 ![alt text](/Figure/Screen%20Shot%202017-12-07%20at%2013.50.20.png "Tom's fault")
 
@@ -104,9 +104,9 @@ All task on this section are to be done in this folder.
 
 ```bash
 screen -S anvio
-sinteractive -A project_2001499 -c 4 -m 20G
+sinteractive -A project_2005827 -c 4 -m 20G
 
-cd /scratch/project_2001499/$USER
+cd /scratch/project_2005827/$USER
 mkdir ANVIO
 cd ANVIO
 ```
@@ -116,7 +116,7 @@ We will do this for one sample to demonstrate the workflow.
 For `anvi'o` you'll need to load `bioconda` and activate the anvio-7 virtual environment.  
 
 ```bash
-export PROJAPPL=/projappl/project_2001499
+export PROJAPPL=/projappl/project_2005827
 module load bioconda/3
 source activate anvio-7
 ```
@@ -197,11 +197,11 @@ __Don't__ do this from the screen and make sure your inside your `ANVIO` folder.
 #SBATCH --array=1-4
 #SBATCH --nodes 1
 #SBATCH --cpus-per-task=20
-#SBATCH --account project_2001499
+#SBATCH --account project_2005827
 
 SAMPLE=Sample0${SLURM_ARRAY_TASK_ID}
 
-export PROJAPPL=/projappl/project_2001499
+export PROJAPPL=/projappl/project_2005827
 module load bioconda/3
 source activate anvio-7
 
@@ -291,10 +291,10 @@ Other options can stay as they are.
 Note the computing node identifier before logging out.
 
 ```bash
-cd /scratch/project_2001499/$USER
+cd /scratch/project_2005827/$USER
 # Take note whether you were connected to login1 or login2. Screens are login node specific.
 screen -S anvio
-sinteractive -A project_2001499 -c 4 -m 10G -t 08:00:00
+sinteractive -A project_2005827 -c 4 -m 10G -t 08:00:00
 # And after this change the time and memory allocations.
 # When your connected to the computing node, check the identifier and detach from the screen
 ```
@@ -319,10 +319,8 @@ Go to the folder and see what it contains.
 
 ```bash
 screen -r anvio
-module purge
-export PROJAPPL=/projappl/project_2001499
 module load bioconda/3
-source activate  anvio-7
+source activate anvio7
 cp -r ../COURSE_FILES/ANVI-TUTORIAL .
 cd ANVI-TUTORIAL
 ls -l
@@ -409,7 +407,7 @@ Then it's finally time to start working with the full data set from Sample03.
 First login to Puhti and go to your working directory:
 
 ```bash
-cd /scratch/project_2001499/$USER
+cd /scratch/project_2005827/$USER
 ```
 
 Although you have probably binned some nice MAGs, we will work from now on with MAGs that Antti and Igor have binned.
@@ -455,9 +453,8 @@ To remove this redundancy, we perform a step that is called dereplication.
 Here we will use `dRep` for this (to learn more about `dRep` see [here](https://drep.readthedocs.io/)):
 
 ```bash
-sinteractive -A project_2001499 -c 4
+sinteractive -A project_2005827 -c 4
 
-export PROJAPPL=/projappl/project_2001499
 module load bioconda/3
 source activate drep
 
@@ -488,10 +485,10 @@ anvi-run-pfams --contigs-db CONTIGS.db \
                --num-threads 4
 ```
 
-These steps have been done by us already, and the annotations have been stored inside the `CONTIGS.db` of each assembly in `/scratch/project_2001499/COURSE_FILES/BINNING_MEGAHIT`.  
+These steps have been done by us already, and the annotations have been stored inside the `CONTIGS.db` of each assembly in `/scratch/project_2005827/COURSE_FILES/BINNING_MEGAHIT`.  
 What we need now is to get our hands on a nice table that we can then later import to R.  
 We can achieve this by running `anvi-export-functions`.
-If you're not yet in the `sinteractive` session, connect to it, go to your working directory, load `bioconda`, activate the `anvio-7` environment, and then:
+If you're not yet in the `sinteractive` session, connect to it, go to your working directory, load `bioconda`, activate the `anvio7` environment, and then:
 
 ```bash
 for SAMPLE in Sample01 Sample02 Sample03 Sample04; do

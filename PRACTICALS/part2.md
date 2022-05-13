@@ -10,8 +10,8 @@ module load biokit
 ```
 
 Assembling metagenomic data can be very resource demanding and so we need to do it as a batch job.  
-Copy the script called `MEGAHIT.sh` from the `COURSE_FILES` folder to your own directory and submit the batch job as previously.  
-Then open the script using `less` and and answer what do the following flags mean?
+Copy the script called `assembly.sh` from the `COURSE_FILES` folder to your own directory and submit the batch job as previously.  
+Then read the Megahit manual and answer what do the following flags mean?
 
 ```bash
 --min-contig-len 1000
@@ -121,13 +121,13 @@ module load bioconda/3
 source activate anvio-7
 ```
 
-### Rename the scaffolds and select those >5000nt.
+### Rename the scaffolds and select those >2500nt.
 `anvi'o` wants sequence IDs in your FASTA file as simple as possible.  
 Therefore we need to reformat the headers to remove spaces and non-numeric characters.  
 Also contigs shorter than 2500 bp will be removed.
 
 ```bash
-anvi-script-reformat-fasta ../ASSEMBLY_MEGAHIT/Sample02/final.contigs.fa \
+anvi-script-reformat-fasta ../ASSEMBLY/final.contigs.fa \
                            -l 2500 \
                            --simplify-names \
                            --prefix Sample02 \
@@ -164,9 +164,9 @@ anvi-run-scg-taxonomy -c Sample02_2500nt_CONTIGS.db -T 4
 After that's done, detach from the anvi'o screen with `Ctrl+a` `d`
 
 ### Mapping the reads back to the assembly
-Next thing to do is mapping all the reads back to the assembly. We use the renamed >5000 nt contigs and do it sample-wise, so each sample is mapped separately using the trimmed R1 & R2 reads.  
+Next thing to do is mapping all the reads back to the assembly. We use the renamed >2500 nt contigs and do it sample-wise, so each sample is mapped separately using the trimmed R1 & R2 reads.  
 
-However, since this would take three days, I have run this for you and the data can be found from `COURSE_DATA/MEGAHIT_BINNING/`
+However, since this would take some days, I have run this for you and the data can be found from `COURSE_DATA/MEGAHIT_BINNING/`
 The folder contains the output from mapping all samples against all four assemblies. We will be using only the mappings against assembly from Sample02.
 Let's make a softlink to that folder as well. Make sure you make the softlink to your `ANVIO` folder
 

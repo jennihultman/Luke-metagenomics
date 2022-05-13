@@ -10,7 +10,7 @@ module load biokit
 ```
 
 Assembling metagenomic data can be very resource demanding and so we need to do it as a batch job.  
-Copy the script called `MEGAHIT.sh` from the `SBATCH_SCRIPTS` folder to your own directory and submit the batch job as previously.  
+Copy the script called `MEGAHIT.sh` from the `COURSE_FILES` folder to your own directory and submit the batch job as previously.  
 Then open the script using `less` and and answer what do the following flags mean?
 
 ```bash

@@ -19,7 +19,7 @@ Then open the script using `less` and and answer what do the following flags mea
 --k-max 127
 --k-step 10
 --memory 0.8
---num-cpu-threads 8
+--num-cpu-threads 16
 ```
 
 However, as this is only a three-day course we cannot wait for your assemblies to finish, so let's terminate the running jobs.  
@@ -65,7 +65,7 @@ sinteractive -i
 
 module load biokit
 
-metaquast.py ASSEMBLY_MEGAHIT/*/final.contigs.fa \
+metaquast.py ASSEMBLY/*/final.contigs.fa \
              -o METAQUAST_FAST \
              --threads 4 \
              --fast \
@@ -124,35 +124,28 @@ source activate anvio-7
 ### Rename the scaffolds and select those >5000nt.
 `anvi'o` wants sequence IDs in your FASTA file as simple as possible.  
 Therefore we need to reformat the headers to remove spaces and non-numeric characters.  
-Also contigs shorter than 5000 bp will be removed.
-Because *Igor* deleted the assembly files we need to skip this step...
+Also contigs shorter than 2500 bp will be removed.
 
 ```bash
-anvi-script-reformat-fasta ../ASSEMBLY_MEGAHIT/Sample03/final.contigs.fa \
-                           -l 5000 \
+anvi-script-reformat-fasta ../ASSEMBLY_MEGAHIT/Sample02/final.contigs.fa \
+                           -l 2500 \
                            --simplify-names \
-                           --prefix Sample03 \
+                           --prefix Sample02 \
                            -r REPORT \
-                           -o Sample03_5000nt.fa
+                           -o Sample02_2500nt.fa
 ````
-
-Instead let's copy the re-formatted file that luckily we have a copy:
-
-```bash
-cp ../../COURSE_FILES/BINNING_MEGAHIT/Sample03/CONTIGS_5000nt.fa Sample03_5000nt.fa
-```
 
 Whenever you need, you can detach from the screen with `Ctrl+a` `d`.  
 And re-attach with `screen -r anvio`.
 
 ### Generate CONTIGS.db
-The contigs database (`Sample03_5000nt_CONTIGS.db`) contains information on contig length, open reading frames (searched with `Prodigal`) and kmer composition.  
+The contigs database (`Sample02_2500nt_CONTIGS.db`) contains information on contig length, open reading frames (searched with `Prodigal`) and kmer composition.  
 See the [anvi'o webpage](http://merenlab.org/2016/06/22/anvio-tutorial-v2/#creating-an-anvio-contigs-database) for more information.  
 
 ```bash
-anvi-gen-contigs-database --contigs-fasta Sample03_5000nt.fa \
-                          --output-db-path Sample03_5000nt_CONTIGS.db \
-                          -n Sample03_5000nt \
+anvi-gen-contigs-database --contigs-fasta Sample02_2500nt.fa \
+                          --output-db-path Sample02_2500nt_CONTIGS.db \
+                          -n Sample02_2500nt \
                           --num-threads 4
 ```
 
@@ -160,12 +153,12 @@ anvi-gen-contigs-database --contigs-fasta Sample03_5000nt.fa \
 
 First annotate the SCGs.
 ```bash
-anvi-run-hmms --contigs-db Sample03_5000nt_CONTIGS.db --num-threads 4
+anvi-run-hmms --contigs-db Sample02_2500nt_CONTIGS.db --num-threads 4
 ```
 
 And then run taxonomic annotation based on those
 ```bash
-anvi-run-scg-taxonomy -c Sample03_5000nt_CONTIGS.db -T 4
+anvi-run-scg-taxonomy -c Sample02_2500nt_CONTIGS.db -T 4
 ```
 
 After that's done, detach from the anvi'o screen with `Ctrl+a` `d`
@@ -173,8 +166,8 @@ After that's done, detach from the anvi'o screen with `Ctrl+a` `d`
 ### Mapping the reads back to the assembly
 Next thing to do is mapping all the reads back to the assembly. We use the renamed >5000 nt contigs and do it sample-wise, so each sample is mapped separately using the trimmed R1 & R2 reads.  
 
-However, since this would take three days, we have run this for you and the data can be found from `COURSE_DATA/MEGAHIT_BINNING/`
-The folder contains the output from mapping all samples against all four assemblies. We will be using only the mappings against assembly from Sample03.
+However, since this would take three days, I have run this for you and the data can be found from `COURSE_DATA/MEGAHIT_BINNING/`
+The folder contains the output from mapping all samples against all four assemblies. We will be using only the mappings against assembly from Sample02.
 Let's make a softlink to that folder as well. Make sure you make the softlink to your `ANVIO` folder
 
 ```bash
@@ -205,9 +198,9 @@ export PROJAPPL=/projappl/project_2005827
 module load bioconda/3
 source activate anvio-7
 
-anvi-profile --input-file BINNING_MEGAHIT/Sample03/MAPPING/$SAMPLE.bam \
+anvi-profile --input-file BINNING_MEGAHIT/Sample02/MAPPING/$SAMPLE.bam \
                --output-dir PROFILES/$SAMPLE \
-               --contigs-db Sample03_5000nt_CONTIGS.db \
+               --contigs-db Sample02_2500nt_CONTIGS.db \
                --num-threads 20 &> $SAMPLE.profilesdb.log.txt
 ```
 
@@ -219,8 +212,8 @@ Remember to re-attach to you screen and run the command in there.
 ```
 anvi-merge PROFILES/*/PROFILE.db \
            --output-dir MERGED_PROFILES \
-           --contigs-db Sample03_5000nt_CONTIGS.db \
-           --enforce-hierarchical-clustering &> Sample03.merge.log.txt
+           --contigs-db Sample02_2500nt_CONTIGS.db \
+           --enforce-hierarchical-clustering &> Sample02.merge.log.txt
 ```
 
 ### Tunneling the interactive interafce

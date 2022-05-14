@@ -116,7 +116,6 @@ We will do this for one sample to demonstrate the workflow.
 For `anvi'o` you'll need to load `bioconda` and activate the anvio-7 virtual environment.  
 
 ```bash
-export PROJAPPL=/projappl/project_2005827
 module load bioconda/3
 source activate anvio-7
 ```

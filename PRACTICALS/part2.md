@@ -241,7 +241,7 @@ Then go back to your screen and launch the interactive interface.
 Remember to change the `PORT`.
 
 ```
-anvi-interactive -c Sample03_5000nt_CONTIGS.db -p MERGED_PROFILES/PROFILE.db -P PORT
+anvi-interactive -c Sample02_2500nt_CONTIGS.db -p MERGED_PROFILES/PROFILE.db -P PORT
 ```
 
 Then open google chrome and go to address that anvi'o prints on the screen.  
@@ -249,16 +249,13 @@ Also this should work: http://localhost:PORT
 
 **Again change XXXX to your port number**
 
-Since the interface is pretty slow with so large data set, we will divide it to approx. 5 smaller subsets (_bins_). Save this _collection_ with the name `PreCluster`.  
-We will continue working with this set tomorrow.  
-
 When you're done, close the anvi'o server, close the interactive session, close the screen and log out from Puhti.  
 And we're done for today.
 
 ## Genome-resolved metagenomics
 
 Next step in our analysis is genome-resolved metagenomics using anvi'o. We ran all the steps to produce the files for anvi'o yesterday.
-But let's start with a smaller tutorial dataset. It's a subset taken from Sample03.
+
 
 ### Tunneling the interactive interafce (recap from yesterday)
 

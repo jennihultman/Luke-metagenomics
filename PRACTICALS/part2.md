@@ -126,7 +126,7 @@ Therefore we need to reformat the headers to remove spaces and non-numeric chara
 Also contigs shorter than 2500 bp will be removed.
 
 ```bash
-anvi-script-reformat-fasta ../ASSEMBLY/final.contigs.fa \
+anvi-script-reformat-fasta ../ASSEMBLY_MEGAHIT/final.contigs.fa \
                            -l 2500 \
                            --simplify-names \
                            --prefix Sample02 \

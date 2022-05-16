@@ -65,7 +65,7 @@ sinteractive -i
 
 module load biokit
 
-metaquast.py ASSEMBLY_MEGAHIT/*/final.contigs.fa \
+metaquast.py ASSEMBLY_MEGAHIT/final.contigs.fa \
              -o METAQUAST_FAST \
              --threads 4 \
              --fast \

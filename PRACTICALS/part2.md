@@ -197,7 +197,7 @@ export PROJAPPL=/projappl/project_2005827
 module load bioconda/3
 source activate anvio-7
 
-anvi-profile --input-file BINNING_MEGAHIT/Sample02/MAPPING/$SAMPLE.bam \
+anvi-profile --input-file BINNING_MEGAHIT/$SAMPLE.bam \
                --output-dir PROFILES/$SAMPLE \
                --contigs-db Sample02_2500nt_CONTIGS.db \
                --num-threads 20 &> $SAMPLE.profilesdb.log.txt
@@ -252,7 +252,9 @@ Also this should work: http://localhost:PORT
 When you're done, close the anvi'o server, close the interactive session, close the screen and log out from Puhti.  
 And we're done for today.
 
-## Genome-resolved metagenomics
+### Tuesday
+
+## Genome-resolved metagenomics 
 
 Next step in our analysis is genome-resolved metagenomics using anvi'o. We ran all the steps to produce the files for anvi'o yesterday.
 
@@ -392,7 +394,7 @@ anvi-summarize -c CONTIGS.db -p PROFILE.db -C MAGs -o SUMMARY_MAGs
 
 Then it's finally time to start working with the full data set from Sample03.
 
-## MAG annotation and downstream analyses (Part 1)
+## MAG annotation and downstream analyses
 First login to Puhti and go to your working directory:
 
 ```bash
@@ -428,7 +430,7 @@ Normally, one thing that we want to learn more about is the taxonomy of our MAGs
 Although `anvi'o` gives us a preliminary idea, we can use a more dedicated platform for taxonomic assignment of MAGs.  
 Here we will use `GTDBtk`, a tool to infer taxonomy for MAGs based on the GTDB database (you can - and probably should - read more about GTDB [here](https://gtdb.ecogenomic.org/)).  
 
-We have prepared a script to run `GTDBtk` for you, so let's copy it and take a look:
+I have prepared a script to run `GTDBtk` for you, so let's copy it and take a look:
 
 ```bash
 cp ../COURSE_FILES/SBATCH_SCRIPTS/GTDBtk.sh .

@@ -336,6 +336,10 @@ cp ../COURSE_FILES/SBATCH_SCRIPTS/GTDBtk.sh .
 
 And submit the script using `sbatch`.
 
+### CheckM for completeness
+
+checkm lineage_wf -x fasta SUMMARY_MAGs/bin_by_bin/*/*.fa checkM -t 4 --tmpdir /tmp
+
 ### MAG dereplication with dRep
 Because we are doing individual assemblies, it could be that we have obtained a given MAG more than once.  
 To remove this redundancy, we perform a step that is called dereplication.  

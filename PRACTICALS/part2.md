@@ -257,26 +257,25 @@ Then you can close the server from the command line.
 
 Next we'll move on to manually refine each cluster we made in the previous step. We'll do this to each bin in our collection called `PreCluster`.  
 
-To check your collections and bins you can run `anvi-show-collections-and-bins -p PROFILE.db`
+To check your collections and bins you can run `anvi-show-collections-and-bins -p MERGED_PROFILES/PROFILE.db`
 
 If you know what you have, go ahead and refine all the bins on your collection.
-After refining, remember to store the new bins and then close the server from command line and move on to the next one.
 
 ```bash
-anvi-refine -c CONTIGS.db -p PROFILE.db -C COLLECITON_NAME -b BIN_NAME -P PORT
+anvi-refine -c Sample02_2500nt_CONTIGS.db -p MERGED_PROFILES/PROFILE.db -C COLLECITON_NAME -b BIN_NAME -P PORT
 ```
 
 After that's done, we'll rename the bins to a new collection called `PreliminaryBins` and add a prefix to each bin.
 
 ```bash
-anvi-rename-bins -c CONTIGS.db -p PROFILE.db --collection-to-read PreCluster \
-                  --collection-to-write PreliminaryBins --prefix Preliminary \
-                  --report-file REPORT_PreliminaryBins
+anvi-rename-bins -c Sample02_2500nt_CONTIGS.db -p MERGED_PROFILES/PROFILE.db --collection-to-read PreCluster --collection-to-write MAGs --call-MAGs --prefix MEGAHIT --use-highest-completion-score --report-file REPORT
 ```
-Then we can also make a summary of the bins we have in our new collection `PreliminaryBins`.
+
+
+Then we can also make a summary of the bins we have in our new collection `MAGs`.
 
 ```bash
-anvi-summarize -c CONTIGS.db -p PROFILE.db -C PreliminaryBins -o SUMMARY_PreliminaryBins
+anvi-summarize -c CONTIGS.db -p PROFILE.db -C MAGs -o SUMMARY_MAGs
 ```
 After that's done, copy the summary folder to your local machine ands open `index.html`.
 
@@ -298,8 +297,6 @@ And finally you can make a summary of your MAGs before moving on.
 ```bash
 anvi-summarize -c CONTIGS.db -p PROFILE.db -C MAGs -o SUMMARY_MAGs
 ```
-
-Then it's finally time to start working with the full data set from Sample03.
 
 
 ## MAG annotation and downstream analyses

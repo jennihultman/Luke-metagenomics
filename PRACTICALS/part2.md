@@ -348,7 +348,7 @@ module load bioconda/3
 source activate drep
 
 dRep compare DREP \
-             --genomes MAGs/*.fa \
+             --genomes SUMMARY_MAGs/bin_by_bin/*/*.fa \
              --processors 4
 ```
 

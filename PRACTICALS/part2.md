@@ -237,6 +237,8 @@ In SSH tab select "tunnels". Add:
 
 Click add and connect to the right login node, login1 or login2.
 
+## Genome-resolved metagenomics 
+
 Then go back to your screen and launch the interactive interface.  
 Remember to change the `PORT`.
 
@@ -249,101 +251,6 @@ Also this should work: http://localhost:PORT
 
 **Again change XXXX to your port number**
 
-When you're done, close the anvi'o server, close the interactive session, close the screen and log out from Puhti.  
-And we're done for today.
-
-### Tuesday
-
-## Genome-resolved metagenomics 
-
-Next step in our analysis is genome-resolved metagenomics using anvi'o. We ran all the steps to produce the files for anvi'o yesterday.
-
-
-### Tunneling the interactive interafce (recap from yesterday)
-
-Although you can install anvi'o on your own computer (and you're free to do so, but we won't have time to help in that), we will run anvi'o in Puhti and tunnel the interactive interface to your local computer.  
-To be able to to do this, everyone needs to use a different port for tunneling and your port will be __8080 + your number given on the course__. So `Student 1` will use port 8081. If the port doesn't work, try __8100 + your number__.  
-
-Connecting using a tunnel is a bit tricky and involves several steps, so pay special attention.  
-First we need to open an interactive session inside a screen and then log in again with a tunnel using the computing node identifier.
-
-Mini manual for `screen`:
-* `screen -S NAME` - open a screen and give it a session name `NAME`
-* `screen` - open new screen without specifying any name
-* `screen -ls` - list all open sessions
-* `ctrl + a` + `d` - to detach from a session (from inside the screen)
-* `screen -r NAME` - re-attach to a detached session using the name
-* `screen -rD` - re-attach to a attached session
-* `exit` - close the screen and kill all processes running inside the screen (from inside the screen)
-
-So open a normal connection to Puhti and go to your course folder. Take note which login node you were connected.   
-Then open an interactive session and specify that you need 8 hours and 10 Gb of memory.  
-Other options can stay as they are.  
-Note the computing node identifier before logging out.
-
-```bash
-cd /scratch/project_2005827/$USER
-# Take note whether you were connected to login1 or login2. Screens are login node specific.
-screen -S anvio
-sinteractive -A project_2005827 -c 4 -m 10G -t 08:00:00
-# And after this change the time and memory allocations.
-# When your connected to the computing node, check the identifier and detach from the screen
-```
-
-Then you can log out and log in again, but this time in a bit different way.  
-You need to specify your __PORT__ and the __computing node__ to which you connected and also the __login node__ you were connected the first time.  
-
-```bash
-ssh -L PORT:NODEID.bullx:PORT USERNAME@puhti-loginX.csc.fi
-```
-
-And in windows using Putty:  
-In SSH tab select "tunnels". Add:  
-- Source port: PORT  
-- Destination: NODEID.bullx:PORT
-
-Click add and connect as usual, making sure you will be connected to the right login node.
-
-Then we can start to work with our tutorial data in anvi'o.  
-Activate anvi'o v.7 virtual environment and copy the folder containing the tutorial files to you own course folder.  
-Go to the folder and see what it contains.
-
-```bash
-screen -r anvio
-module load bioconda/3
-source activate anvio7
-cp -r ../COURSE_FILES/ANVI-TUTORIAL .
-cd ANVI-TUTORIAL
-ls -l
-```
-You should have there the `CONTIGS.db` and `PROFILE.db` plus an auxiliary data file called `AUXILIARY-DATA.db`.
-
-First have a look at some basic statistics about the contigs database.  
-*__NOTE!__ You need to specify your port.*
-
-```bash
-anvi-display-contigs-stats CONTIGS.db -P PORT
-```
-Now anvi'o tells you to the server address. It should contain your port number. Copy-paste the address to your favourite browser. Chrome is preferred.
-
-One thing before starting the binning, let's check what genomes we might expect to find from our data based on the single-copy core genes (SCGs).
-
-```bash
-anvi-estimate-scg-taxonomy -c CONTIGS.db \
-                           -p PROFILE.db \
-                           --metagenome-mode \
-                           --compute-scg-coverages
-
-```
-
-Then you can open the interactive interface and explore our data and the interface.  
-*__NOTE!__ You need to specify your port in here as well.*
-
-```bash
-anvi-interactive -c CONTIGS.db -p PROFILE.db -P PORT
-```
-
-You might notice that it's a bit slow to use sometimes. Even this tutorial data is quite big and anvi'o gets slow to use when viewing the whole data. So next step is to split the data in to ~ 5-8 clusters (__bins__) that we will work on individually.
 
 Make the clusters and store them in a collection called `PreCluster`. Make sure that the bins are named `Bin_1`, `Bin_2`,..., `Bin_N`. (or anything else that's easy to remember).  
 Then you can close the server from the command line.
@@ -394,18 +301,12 @@ anvi-summarize -c CONTIGS.db -p PROFILE.db -C MAGs -o SUMMARY_MAGs
 
 Then it's finally time to start working with the full data set from Sample03.
 
+
 ## MAG annotation and downstream analyses
 First login to Puhti and go to your working directory:
 
 ```bash
 cd /scratch/project_2005827/$USER
-```
-
-Although you have probably binned some nice MAGs, we will work from now on with MAGs that Antti and Igor have binned.
-Let's copy the FASTA files to your working directory:
-
-```bash
-cp -r ../COURSE_FILES/MAGs MAGs
 ```
 
 Let's also take the summary file for each of the four samples:
